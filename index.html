@@ -80,7 +80,7 @@
 
  // Обработчик клика по тексту комментария (перенос комментария в поле ввода)
   const initAnswer = () => {
-    const commentsElement = document.querySelectorAll(".comment-text");
+    const commentsElement = document.querySelectorAll(".comment");
     for (const comment of commentsElement) {
       comment.addEventListener("click", () => {
         const index = comment.dataset.index;
@@ -95,7 +95,8 @@
 const initLikesCounter = () => {
   const buttonsLikes = document.querySelectorAll(".like-button");
   for (const buttonLikes of buttonsLikes) {
-    buttonLikes.addEventListener("click", () => {
+    buttonLikes.addEventListener("click", (event) => {
+      event.stopPropagation();
       const index = buttonLikes.dataset.index;
       if (comments[index].isLike == true) {
         comments[index].likes -=1;
@@ -114,7 +115,7 @@ const initLikesCounter = () => {
 
   const renderComment = () => {
     const commentHtml = comments.map((comment, index) => {
-      return `<li class="comment">
+      return `<li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>
               ${comment.name}
