@@ -143,7 +143,14 @@ const initLikesCounter = () => {
 
   };
 
-  
+  // Создаем функцию, которая принимает строку и возвращает обработанный результат
+const sanitizeHtml = (htmlString) => {
+   return htmlString
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+};
 
   buttonElement.addEventListener("click", () => {
 
@@ -164,12 +171,8 @@ const initLikesCounter = () => {
     }
 
     comments.push({
-      name: nameInputElement.value.
-      replaceAll(">", "&gt;").
-      replaceAll("<", "&lt;"),
-      text: commentInputElement.value
-      .replaceAll(">", "&gt;").
-      replaceAll("<", "&lt;"),
+      name: sanitizeHtml(nameInputElement.value),
+      text: sanitizeHtml(commentInputElement.value),
       date: date_time(),
       likes: 0,
       isLike: false
