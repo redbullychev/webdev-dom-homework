@@ -96,22 +96,14 @@
         text: commentInputElement.value,
         name: nameInputElement.value
       })
-    }).then((response) => {
-      response.json().then((responseData) => {
-        const appComments = responseData.comments.map((comment) =>{
-        return {
-          name: comment.author.name,
-          date: date_time(comment.date),
-          text: comment.text,
-          likes: comment.likes,
-          isLiked: false,
-        };
+    })
+      .then((response) => {
+        response.json().then((data) => {
+        getApi();
       });
-      comments = appComments;
-      });
-    });
     
-      };
+    });
+  };
   
 // Преобразование времени
 
@@ -238,7 +230,6 @@ const sanitizeHtml = (htmlString) => {
 
   buttonElement.addEventListener("click", () => {
     addComment();
-    getApi();
     renderComment();
     nameInputElement.value = "";
     commentInputElement.value = "";
@@ -247,7 +238,6 @@ const sanitizeHtml = (htmlString) => {
   commentInputElement.addEventListener("keyup", (e) => { 
     if (e.code === 'Enter') {
       addComment();
-      getApi();
       renderComment();
       nameInputElement.value = "";
       commentInputElement.value = "";
