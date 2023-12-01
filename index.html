@@ -12,14 +12,14 @@
     <ul class="comments" id="add-comment">
       
     </ul>
-    <div class="add-form">
-      <input id="name-input" type="text" class="add-form-name" placeholder="Введите ваше имя" />
-      <textarea id="comment-input" type="text" class="add-form-text" placeholder="Введите ваш коментарий"
-        rows="4"></textarea>
-      <div class="add-form-row">
-        <button class="add-form-button" id="add-button">Написать</button>
+      <div class="add-form" >
+        <input id="name-input" type="text" class="add-form-name" placeholder="Введите ваше имя" />
+        <textarea id="comment-input" type="text" class="add-form-text" placeholder="Введите ваш коментарий"
+          rows="4"></textarea>
+        <div class="add-form-row">
+          <button class="add-form-button" id="add-button">Написать</button>
+        </div>
       </div>
-    </div>
   </div>
 </body>
 <style>
@@ -36,6 +36,7 @@
   const listElement = document.getElementById("add-comment");
   const nameInputElement = document.getElementById("name-input")
   const commentInputElement = document.getElementById("comment-input");
+  const addformEllement = document.querySelector(".add-form");
   
 
 
@@ -46,16 +47,16 @@
     ];
   "use strict";
 
-  getApi();
-  function getApi() {
-    fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments"
+  getApiFirst();
+  function getApiFirst() {
+    buttonElement.disabled = true;
+    listElement.textContent = "Пожалуйста подождите, загружаю комментарии...";
+    return fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments"
   , {
     method: "GET"
-  });
-
-  fetchPromise.then((response) => {
-    const jsonPromise = response.json();
-    jsonPromise.then((responseData) => {
+  }).then((response) => {
+    return response.json() })
+  .then((responseData) => {
       const appComments = responseData.comments.map((comment) =>{
         return {
           name: comment.author.name,
@@ -68,42 +69,53 @@
       comments = appComments;
       renderComment();
     });
-  });
-  };
+  }
+
+
+  function getApi() {
+    return fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments"
+  , {
+    method: "GET"
+  }).then((response) => {
+    return response.json() })
+  .then((responseData) => {
+      const appComments = responseData.comments.map((comment) =>{
+        return {
+          name: comment.author.name,
+          date: date_time(comment.date),
+          text: comment.text,
+          likes: comment.likes,
+          isLiked: false,
+        };
+      });
+      comments = appComments;
+      renderComment();
+    });
+  }
 
 // Функция добавления комментария 
   function addComment() {
-    // nameInputElement.classList.remove("error");
-    // commentInputElement.classList.remove("error");
-
-    // let isValid = true;
-    // if (nameInputElement.value.trim() === "") {
-    //     isValid = false;
-    //     nameInputElement.classList.add("error");
-    // }
-    // if (commentInputElement.value.trim() === "") {
-    //   isValid = false;
-    //   commentInputElement.classList.add("error");
-    // }
-    // if (!isValid) {
-    //   return;
-    // }
-    
-    
-    fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments", {
+    oldAddformEllement = addformEllement.innerHTML;
+    addformEllement.classList.remove("add-form");
+    addformEllement.textContent = "Комментарий добавляется...";
+    return fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments", {
       method: "POST",
       body: JSON.stringify({
         text: commentInputElement.value,
         name: nameInputElement.value
       })
-    })
+    }) 
       .then((response) => {
-        response.json().then((data) => {
-        getApi();
+        return response.json()})
+        .then((data) => {
+        return getApi();
+      })
+      .then((response) => {
+        addformEllement.innerHTML = oldAddformEllement;
+        addformEllement.classList.add("add-form");
       });
     
-    });
-  };
+    }
   
 // Преобразование времени
 
@@ -172,6 +184,8 @@ const initLikesCounter = () => {
 
   if (validName && validComment) {
       buttonElement.disabled = false;
+  } else {
+    buttonElement.disabled = true;
   }
 
  };
@@ -186,6 +200,7 @@ const initLikesCounter = () => {
 // Рендер комментария
 
   const renderComment = () => {
+    buttonElement.disabled = true;
     const commentHtml = comments.map((comment, index) => {
       return `<li class="comment" data-index="${index}">
           <div class="comment-header">
@@ -244,7 +259,6 @@ const sanitizeHtml = (htmlString) => {
     }
   });
 
-  renderComment();
 </script>
 
 </html>
