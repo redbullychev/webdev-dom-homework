@@ -41,23 +41,69 @@
 
 // Массив объектов
 
-  const comments = [
-      {
-        name: "Глеб Фокин",
-        text: "Комментарий 1",
-        date: "12.02.22 12:18",
-        likes: 3,
-        isLike: false
-      },
-      {
-        name: "Варвара Н.",
-        text: "Мне нравится, как оформлена эта страница",
-        date: "13.02.22 19:22",
-        likes: 75,
-        isLike: true
-      }
+  let comments = [
+      
     ];
   "use strict";
+
+  getApi();
+  function getApi() {
+    fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments"
+  , {
+    method: "GET"
+  });
+
+  fetchPromise.then((response) => {
+    const jsonPromise = response.json();
+    jsonPromise.then((responseData) => {
+      const appComments = responseData.comments.map((comment) =>{
+        return {
+          name: comment.author.name,
+          date: date_time(comment.date),
+          text: comment.text,
+          likes: comment.likes,
+          isLiked: false,
+        };
+      });
+      comments = appComments;
+      renderComment();
+    });
+  });
+  };
+
+// Функция добавления комментария 
+  function addComment() {
+    // nameInputElement.classList.remove("error");
+    // commentInputElement.classList.remove("error");
+
+    // let isValid = true;
+    // if (nameInputElement.value.trim() === "") {
+    //     isValid = false;
+    //     nameInputElement.classList.add("error");
+    // }
+    // if (commentInputElement.value.trim() === "") {
+    //   isValid = false;
+    //   commentInputElement.classList.add("error");
+    // }
+    // if (!isValid) {
+    //   return;
+    // }
+    
+    
+    fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments", {
+      method: "POST",
+      body: JSON.stringify({
+        text: commentInputElement.value,
+        name: nameInputElement.value
+      })
+    })
+      .then((response) => {
+        response.json().then((data) => {
+        getApi();
+      });
+    
+    });
+  };
   
 // Преобразование времени
 
@@ -67,8 +113,8 @@
     }
     return value;
   }
-  function date_time() {
-    var current_datetime = new Date();
+  function date_time(date) {
+    var current_datetime = new Date(date);
     var day = zero_first_format(current_datetime.getDate());
     var month = zero_first_format(current_datetime.getMonth() + 1);
     var year = current_datetime.getFullYear() % 100;
@@ -98,18 +144,44 @@ const initLikesCounter = () => {
     buttonLikes.addEventListener("click", (event) => {
       event.stopPropagation();
       const index = buttonLikes.dataset.index;
-      if (comments[index].isLike == true) {
+      if (comments[index].isLiked == true) {
         comments[index].likes -=1;
-        comments[index].isLike = false;     
+        comments[index].isLiked = false;     
       } else {
         comments[index].likes +=1;
-        comments[index].isLike = true;      
+        comments[index].isLiked = true;      
       }
       renderComment();
     });
   }
 };
 
+// Валидация кнопки
+
+ const validButton = () => {
+  let validName = false;
+  let validComment = false;
+
+  if (nameInputElement.value !== '') {
+    validName = true;
+  }
+  
+  if (commentInputElement.value !== '') {
+    validComment = true;
+  }
+
+  if (validName && validComment) {
+      buttonElement.disabled = false;
+  }
+
+ };
+
+  nameInputElement.addEventListener('input', () => {
+    validButton();
+    });
+  commentInputElement.addEventListener('input', () => {
+    validButton();
+    });
 
 // Рендер комментария
 
@@ -130,16 +202,17 @@ const initLikesCounter = () => {
           <div class="comment-footer">
             <div class="likes">
               <span data-index="${index}" class="likes-counter">${comment.likes}</span>
-              <button data-index="${index}" class="${comment.isLike ? 'like-button active-like' : 'like-button'}"></button>
+              <button data-index="${index}" class="${comment.isLiked ? 'like-button active-like' : 'like-button'}"></button>
             </div>
           </div>
         </li>`;
     })
     .join("");
-
     listElement.innerHTML = commentHtml;
+    buttonElement.disabled = true;
     initLikesCounter();
     initAnswer();
+    validButton();
 
   };
 
@@ -152,35 +225,23 @@ const sanitizeHtml = (htmlString) => {
           .replaceAll('"', "&quot;");
 };
 
+  
+// Обработчик клика по кнопке "Написать"
+
   buttonElement.addEventListener("click", () => {
-
-    nameInputElement.classList.remove("error");
-    commentInputElement.classList.remove("error");
-
-    let isValid = true;
-    if (nameInputElement.value === "") {
-        isValid = false;
-        nameInputElement.classList.add("error");
-    }
-    if (commentInputElement.value === "") {
-      isValid = false;
-      commentInputElement.classList.add("error");
-    }
-    if (!isValid) {
-      return;
-    }
-
-    comments.push({
-      name: sanitizeHtml(nameInputElement.value),
-      text: sanitizeHtml(commentInputElement.value),
-      date: date_time(),
-      likes: 0,
-      isLike: false
-    });
-
+    addComment();
     renderComment();
     nameInputElement.value = "";
     commentInputElement.value = "";
+  });
+
+  commentInputElement.addEventListener("keyup", (e) => { 
+    if (e.code === 'Enter') {
+      addComment();
+      renderComment();
+      nameInputElement.value = "";
+      commentInputElement.value = "";
+    }
   });
 
   renderComment();
