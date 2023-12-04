@@ -20,6 +20,7 @@
           <button class="add-form-button" id="add-button">Написать</button>
         </div>
       </div>
+      <div id="loader"></div>
   </div>
 </body>
 <style>
@@ -37,6 +38,7 @@
   const nameInputElement = document.getElementById("name-input")
   const commentInputElement = document.getElementById("comment-input");
   const addformEllement = document.querySelector(".add-form");
+  const loaderComment = document.getElementById("loader");
   
 
 
@@ -85,34 +87,60 @@
           date: date_time(comment.date),
           text: comment.text,
           likes: comment.likes,
-          isLiked: false,
+          isLiked: false
         };
       });
       comments = appComments;
+      nameInputElement.value = "";
+      commentInputElement.value = "";
       renderComment();
     });
   }
 
 // Функция добавления комментария 
   function addComment() {
-    oldAddformEllement = addformEllement.innerHTML;
-    addformEllement.classList.remove("add-form");
-    addformEllement.textContent = "Комментарий добавляется...";
+    let oldLoader = loaderComment.innerHTML
+    addformEllement.style.display = 'none';
+    loaderComment.textContent = "Комментарий загружается";
+    
     return fetch("https://wedev-api.sky.pro/api/v1/bulychev-ivan/comments", {
       method: "POST",
       body: JSON.stringify({
         text: commentInputElement.value,
-        name: nameInputElement.value
+        name: nameInputElement.value,
+        forceError: true
       })
     }) 
       .then((response) => {
-        return response.json()})
+        if (response.status === 200){
+          return response.json()
+        } else if (response.status === 400) {
+          throw new Error ("400");
+        } else if (response.status === 500) {
+          throw new Error ("500");
+        }
+      })
         .then((data) => {
         return getApi();
       })
       .then((response) => {
-        addformEllement.innerHTML = oldAddformEllement;
-        addformEllement.classList.add("add-form");
+      addformEllement.style.display = 'flex';
+      loaderComment.innerHTML = oldLoader;
+      })
+      .catch((error) => {
+        if (error.message === "400") {
+          alert("Поле ввод должно содержать более 3-х символов");
+          addformEllement.style.display = 'flex';
+          loaderComment.innerHTML = oldLoader;
+        } else if (error.message === "500") {
+          loaderComment.innerHTML = oldLoader;
+          console.log("Повторный запрос");        
+          addComment();
+        } else {
+          alert("Кажется у вас сломался интернет, попробуйте позже!");
+          addformEllement.style.display = 'flex';
+          loaderComment.innerHTML = oldLoader;
+        }
       });
     
     }
@@ -225,6 +253,7 @@ const initLikesCounter = () => {
     .join("");
     listElement.innerHTML = commentHtml;
     buttonElement.disabled = true;
+    
     initLikesCounter();
     initAnswer();
     validButton();
@@ -246,16 +275,13 @@ const sanitizeHtml = (htmlString) => {
   buttonElement.addEventListener("click", () => {
     addComment();
     renderComment();
-    nameInputElement.value = "";
-    commentInputElement.value = "";
+    
   });
 
   commentInputElement.addEventListener("keyup", (e) => { 
     if (e.code === 'Enter') {
       addComment();
       renderComment();
-      nameInputElement.value = "";
-      commentInputElement.value = "";
     }
   });
 
