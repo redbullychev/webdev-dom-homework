@@ -70,6 +70,10 @@
       });
       comments = appComments;
       renderComment();
+    })
+    .catch((error) =>{
+      alert("Кажется у вас сломался интернет, попробуйте позже!");
+      listElement.textContent = "Перезагрузите страницу";
     });
   }
 
