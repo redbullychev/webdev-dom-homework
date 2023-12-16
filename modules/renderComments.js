@@ -1,6 +1,8 @@
 import { initLikesCounter } from "./likesCounter.js";
 import { initAnswer } from "./initAnswer.js";
 import { validButton } from "./validButton.js";
+import { userName } from "./renderLogin.js";
+
 
 const listElement = document.getElementById("add-comment");
 const buttonElement = document.getElementById("add-button");
@@ -31,6 +33,8 @@ export const renderComment = (comments) => {
     .join("");
     listElement.innerHTML = commentHtml;
     buttonElement.disabled = true;
+    const nameInputElement = document.getElementById("name-input");
+    nameInputElement.value = userName;
     
     initLikesCounter( comments, renderComment );
     initAnswer( comments, renderComment);
