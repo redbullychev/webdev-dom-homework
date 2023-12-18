@@ -1,13 +1,13 @@
 import { getApi, postApi } from "./api.js";
 import { date_time } from "./curentDate.js";
 import { renderComment } from "./renderComments.js";
+import { renderLogin } from "./renderLogin.js";
 import { sanitizeHtml } from "./sanitizeHtml.js";
 import { validButton } from "./validButton.js";
 
 // Объявляем переменные
 
 const buttonElement = document.getElementById("add-button");
-const buttonDelElement = document.getElementById("dell-button");
 const listElement = document.getElementById("add-comment");
 const nameInputElement = document.getElementById("name-input")
 const commentInputElement = document.getElementById("comment-input");
@@ -16,33 +16,16 @@ const loaderComment = document.getElementById("loader");
 
 
 
+
 // Массив объектов
 
-let comments = [
+export let comments = [
     
   ];
 
-
 buttonElement.disabled = true;
-listElement.textContent = "Пожалуйста подождите, загружаю комментарии...";
-getApi()
-  .then((responseData) => {
-      const appComments = responseData.comments.map((comment) =>{
-        return {
-          name: comment.author.name,
-          date: date_time(comment.date),
-          text: comment.text,
-          likes: comment.likes,
-          isLiked: false,
-        };
-      });
-      comments = appComments;
-      renderComment( comments );
-    })
-    .catch((error) =>{
-      alert("Кажется у вас сломался интернет, попробуйте позже!");
-      listElement.textContent = "Перезагрузите страницу";
-    }); 
+renderLogin( comments );
+
   
 
 
