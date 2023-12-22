@@ -1,9 +1,9 @@
 import { getApi, postApi } from "./api.js";
-import { date_time } from "./curentDate.js";
 import { renderComment } from "./renderComments.js";
 import { renderLogin } from "./renderLogin.js";
 import { sanitizeHtml } from "./sanitizeHtml.js";
 import { validButton } from "./validButton.js";
+import { format } from "date-fns";
 
 // Объявляем переменные
 
@@ -33,9 +33,10 @@ function getComments() {
 getApi()
 .then((responseData) => {
     const appComments = responseData.comments.map((comment) =>{
+      const createDate = format(new Date(comment.date), 'yyyy-MM-dd hh.mm.ss');
       return {
         name: comment.author.name,
-        date: date_time(comment.date),
+        date: createDate,
         text: comment.text,
         likes: comment.likes,
         isLiked: false

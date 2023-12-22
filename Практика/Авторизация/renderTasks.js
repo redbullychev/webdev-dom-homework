@@ -1,19 +1,24 @@
 // Модуль renderTasks.js
 import { deleteTodo, postTodo } from "./api.js";
 import { loginName } from "./renderLogin.js";
+import { formatDateToRu, formatDateToUs } from "./lib/formatDate/formatDate.js";
+import { format } from "date-fns";
 
 //   const listElement = document.getElementById("list");
 
 export const renderTasks = ({ tasks, fetchAndRenderTasks }) => {
   const appElement = document.getElementById("app");
+  const country = "ru";
   const tasksHtml = tasks
     .map((task) => {
+      const createDate = format(new Date(task.created_at), 'dd/MM/yyyy hh:mm:ss');
       return `
       <li class="task">
         <p class="task-text">
           ${task.text}
           <button data-id="${task.id}" class="button delete-button">Удалить</button>
         </p>
+        <p><i>Задача создана: ${createDate}</i></p>
       </li>`;
     })
     .join("");
