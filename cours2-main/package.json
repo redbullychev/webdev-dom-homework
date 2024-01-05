@@ -1,9 +1,10 @@
 {
-  "name": "webdev-dom-homework",
+  "name": "cours2-main",
   "version": "1.0.0",
-  "description": "https://glebkaf.github.io/webdev-dom-homework/",
+  "description": "MVP аналога популярной соц. сети для обмена фотографиями",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack --mode development --watch"
   },
   "keywords": [],
