@@ -1,0 +1,27 @@
+{
+  "name": "lesson_todo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "dev": "webpack --mode development --watch",
+    "prepare": "husky install"
+  },
+  "author": "ivan",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^3.0.6"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.1",
+    "husky": "^8.0.3",
+    "prettier": "^3.1.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

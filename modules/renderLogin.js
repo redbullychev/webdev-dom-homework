@@ -1,6 +1,6 @@
 import { getApi, token, setToken, login } from "./api.js";
-import { date_time } from "./curentDate.js";
 import { renderComment } from "./renderComments.js";
+import { format } from "date-fns";
 
 const addformEllement = document.querySelector(".add-form");
 const appElement  =document.getElementById("app");
@@ -11,9 +11,10 @@ export const renderLogin = ( comments ) => {
   getApi()
   .then((responseData) => {
       const appComments = responseData.comments.map((comment) =>{
+        const createDate = format(new Date(comment.date), 'yyyy-MM-dd hh.mm.ss');
         return {
           name: comment.author.name,
-          date: date_time(comment.date),
+          date: createDate,
           text: comment.text,
           likes: comment.likes,
           isLiked: false,
